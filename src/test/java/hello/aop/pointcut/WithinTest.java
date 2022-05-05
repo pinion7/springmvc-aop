@@ -22,7 +22,7 @@ public class WithinTest {
     /**
      * 1. within
      * within 지시자는 특정 타입 내의 조인 포인트에 대한 매칭을 제한한다.
-     * 쉽게 이야기해서 해당 타입이 매칭되면 그 안의 메서드(조인 포인트)들이 자동으로 매칭된다.
+     * 쉽게 이야기해서 해당 타입이 매칭되면 그 안의 메서드(조인 포인트)들이 전부 자동으로 매칭된다.
      * 문법은 단순한데 execution 에서 타입 부분만 사용한다고 보면 된다.
      */
     @Test
@@ -33,7 +33,7 @@ public class WithinTest {
     }
 
     @Test
-    @DisplayName("1-2. within 기본 테스트")
+    @DisplayName("1-2. within 기본 테스트: *도 가능")
     void withinStar() {
         pointcut.setExpression("within(hello.aop.member.*Service*)");
         assertThat(pointcut.matches(hellMethod, MemberServiceImpl.class)).isTrue();
@@ -41,7 +41,7 @@ public class WithinTest {
 
 
     @Test
-    @DisplayName("1-3 within 기본 테스트")
+    @DisplayName("1-3 within 기본 테스트: 서브패키지")
     void withinSubPackage() {
         pointcut.setExpression("within(hello.aop..*)");
         assertThat(pointcut.matches(hellMethod, MemberServiceImpl.class)).isTrue();

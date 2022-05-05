@@ -11,6 +11,10 @@ import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * 형태: execution(접근제어자? 반환타입 선언타입?메서드이름(파라미터) 예외?)
+ * 예시: execution(public java.lang.String hello.aop.member.MemberServiceImpl.hello(java.lang.String) Exception)
+ */
 @Slf4j
 public class ExecutionTest {
 
@@ -35,7 +39,8 @@ public class ExecutionTest {
      * 매칭 조건
      *  - 접근제어자?: public
      *  - 반환타입: String
-     *  - 선언타입?: hello.aop.member.MemberServiceImpl 메서드이름: hello
+     *  - 선언타입?: hello.aop.member.MemberServiceImpl
+     *  - 메서드이름: hello
      *  - 파라미터: (String)
      *  - 예외?: 생략
      * */
@@ -112,36 +117,36 @@ public class ExecutionTest {
        .. : 해당 위치의 패키지와 그 하위 패키지도 포함
      */
     @Test
-    @DisplayName("5-1. 패키지 매칭 관련 포인트컷")
+    @DisplayName("5-1. 패키지 매칭 관련 포인트컷 - 전부 기입")
     void packageExactMatch1() {
         pointcut.setExpression("execution(* hello.aop.member.MemberServiceImpl.hello(..))");
         assertThat(pointcut.matches(helloMethod, MemberServiceImpl.class)).isTrue();
     }
 
     @Test
-    @DisplayName("5-2. 패키지 매칭 관련 포인트컷")
+    @DisplayName("5-2. 패키지 매칭 관련 포인트컷 - 클래스랑 메서드에 와일드카드")
     void packageExactMatch2() {
         pointcut.setExpression("execution(* hello.aop.member.*.*(..))");
         assertThat(pointcut.matches(helloMethod, MemberServiceImpl.class)).isTrue();
     }
 
     @Test
-    @DisplayName("5-3. 패키지 매칭 관련 포인트컷")
-    void packageExactMatch3() {
+    @DisplayName("5-3. 패키지 매칭 관련 포인트컷 - 패키지명 누락")
+    void packageExactFalse() {
         pointcut.setExpression("execution(* hello.aop.*.*(..))");
         assertThat(pointcut.matches(helloMethod, MemberServiceImpl.class)).isFalse();
     }
 
     @Test
-    @DisplayName("5-4. 패키지 매칭 관련 포인트컷")
-    void packageExactMatch4() {
+    @DisplayName("5-4. 패키지 매칭 관련 포인트컷 - 서브 패키지1")
+    void packageMatchSubPackage1() {
         pointcut.setExpression("execution(* hello.aop.member..*.*(..))");
         assertThat(pointcut.matches(helloMethod, MemberServiceImpl.class)).isTrue();
     }
 
     @Test
-    @DisplayName("5-5. 패키지 매칭 관련 포인트컷")
-    void packageExactMatch5() {
+    @DisplayName("5-5. 패키지 매칭 관련 포인트컷 - 서브 패키지2")
+    void packageMatchSubPackage2() {
         pointcut.setExpression("execution(* hello.aop..*.*(..))");
         assertThat(pointcut.matches(helloMethod, MemberServiceImpl.class)).isTrue();
     }
@@ -156,7 +161,7 @@ public class ExecutionTest {
      * 다형성에서 부모타입 = 자식타입 이 할당 가능하다는 점을 떠올려보면 된다.
      */
     @Test
-    @DisplayName("6-1. 타입 매칭 - 부모 타입 허용")
+    @DisplayName("6-1. 타입 매칭 - 자기 자신 타입 허용")
     void typeExactMatch() {
         pointcut.setExpression("execution(* hello.aop.member.MemberServiceImpl.*(..))");
         assertThat(pointcut.matches(helloMethod, MemberServiceImpl.class)).isTrue();
@@ -182,7 +187,7 @@ public class ExecutionTest {
      * 그래서 부모 타입에 있는 hello(String) 메서드는 매칭에 성공하지만, 부모 타입에 없는 internal(String) 는 매칭에 실패한다.
      */
     @Test
-    @DisplayName("7-1. 타입 매칭 - 부모 타입에 있는 메서드만 허용")
+    @DisplayName("7-1. 타입 매칭 - MemberServiceImpl에 속하는 자신의 메서드는 당연 매칭 가능")
     void typeMatchInternal() throws NoSuchMethodException {
         pointcut.setExpression("execution(* hello.aop.member.MemberServiceImpl.*(..))");
         Method internalMethod = MemberServiceImpl.class.getMethod("internal", String.class);
@@ -191,7 +196,7 @@ public class ExecutionTest {
 
     // 포인트컷으로 지정한 MemberService 는 internal 이라는 이름의 메서드가 없다.
     @Test
-    @DisplayName("7-2. 타입 매칭 - 부모 타입에 있는 메서드만 허용")
+    @DisplayName("7-2. 타입 매칭 - MemberService는 impl의 부모 타입이기 때문에, 자식타입의 메서드 매칭 불가")
     void typeMatchSuperTypeMethodFalse() throws NoSuchMethodException {
         pointcut.setExpression("execution(* hello.aop.member.MemberService.*(..))");
         Method internalMethod = MemberServiceImpl.class.getMethod("internal", String.class);

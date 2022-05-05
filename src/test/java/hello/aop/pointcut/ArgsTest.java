@@ -26,8 +26,8 @@ public class ArgsTest {
 
 
     /**
-     * 1. args
-     * args : 인자가 주어진 타입의 인스턴스인 조인 포인트로 매칭 기본 문법은 execution 의 args 부분과 같다.
+     * 1. args - execution에서 파라미터 매칭 부분만 가져와서 매칭하는 거임
+     * args : 인자가 주어진 타입의 인스턴스인 조인 포인트로 매칭. 기본 문법은 execution 의 args 부분과 같다.
      *
      * execution과 args의 차이점
      *  - execution 은 파라미터 타입이 정확하게 매칭되어야 한다. execution 은 클래스에 선언된 정보를 기반으로 판단한다.
@@ -47,8 +47,8 @@ public class ArgsTest {
 
     /**
      * 2. args Vs. execution
-     * execution(* *(java.io.Serializable)): 메서드의 시그니처로 판단 (정적)
-     * args(java.io.Serializable): 런타임에 전달된 인수로 판단 (동적)
+     * execution(* *(java.io.Serializable)): 메서드의 시그니처(정해둔 것으로)로 판단 (정적)
+     * args(java.io.Serializable): 런타임에 전달된 실제 인수로 판단 (동적)
      *
      * pointcut() : AspectJExpressionPointcut 에 포인트컷은 한번만 지정할 수 있다.
      * 이번 테스트에서는 테스트를 편리하게 진행하기 위해 포인트컷을 여러번 지정하기 위해 포인트컷 자체를 생성하는 메서드를 만들었다.
@@ -61,12 +61,12 @@ public class ArgsTest {
      */
     @Test
     void argsVsExecution() {
-        //Args
+        //Args - 해당 파라미터의 상위 타입도 허용
         assertThat(pointcut("args(String)").matches(helloMethod, MemberServiceImpl.class)).isTrue();
         assertThat(pointcut("args(java.io.Serializable)").matches(helloMethod, MemberServiceImpl.class)).isTrue();
         assertThat(pointcut("args(Object)").matches(helloMethod, MemberServiceImpl.class)).isTrue();
 
-        //Execution
+        //Execution - 정확한 해당 파라미터 타입이어야 함
         assertThat(pointcut("execution(* *(String))").matches(helloMethod, MemberServiceImpl.class)).isTrue();
         assertThat(pointcut("execution(* *(java.io.Serializable))").matches(helloMethod, MemberServiceImpl.class)).isFalse();
         assertThat(pointcut("execution(* *(Object))").matches(helloMethod, MemberServiceImpl.class)).isFalse();

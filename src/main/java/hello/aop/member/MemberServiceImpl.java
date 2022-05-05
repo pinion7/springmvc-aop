@@ -1,7 +1,7 @@
 package hello.aop.member;
 
 import hello.aop.member.annotation.ClassAop;
-import hello.aop.member.annotation.MemberAop;
+import hello.aop.member.annotation.MethodAop;
 import org.springframework.stereotype.Component;
 
 @ClassAop
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class MemberServiceImpl implements MemberService {
 
     @Override
-    @MemberAop("test value")
+    @MethodAop("test value")
     public String hello(String param) {
         return "ok";
     }
